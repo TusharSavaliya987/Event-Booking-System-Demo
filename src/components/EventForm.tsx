@@ -17,8 +17,20 @@ const EventForm = () => {
   );
 
   const [title, setTitle] = useState(existingEvent?.title || '');
-  const [date, setDate] = useState(existingEvent?.date?.split('T')[0] || '');
-  const [time, setTime] = useState(existingEvent?.date?.split('T')[1]?.slice(0, 5) || '');
+  const [date, setDate] = useState(() => {
+    if (!existingEvent?.date) return '';
+    const localDate = new Date(existingEvent.date);
+    return localDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format
+  });
+  const [time, setTime] = useState(() => {
+    if (!existingEvent?.date) return '';
+    const localDate = new Date(existingEvent.date);
+    return localDate.toLocaleTimeString('en-GB', { 
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+  });
   const [location, setLocation] = useState(existingEvent?.location || '');
   const [category, setCategory] = useState(existingEvent?.category || 'conference');
   const [imageUrl, setImageUrl] = useState(existingEvent?.imageUrl || '');
@@ -46,11 +58,14 @@ const EventForm = () => {
     e.preventDefault();
     
     new Promise((resolve) => {
+      const localDateTime = new Date(`${date}T${time}`);
+      const isoString = localDateTime.toISOString();
+      
       const eventData = {
         id: existingEvent?.id || crypto.randomUUID(),
         title,
         description,
-        date: `${date}T${time}:00.000Z`,
+        date: isoString,
         location,
         category,
         imageUrl,
@@ -160,15 +175,20 @@ const EventForm = () => {
                   Please select a time
                 </Form.Message>
               </div>
-              <Form.Control asChild>
-                <input
-                  type="time"
-                  className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  required
-                />
-              </Form.Control>
+              <div className="relative">
+                <Form.Control asChild>
+                  <input
+                    type="time"
+                    className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 pr-24"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    required
+                  />
+                </Form.Control>
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400">
+                  ({Intl.DateTimeFormat().resolvedOptions().timeZone})
+                </div>
+              </div>
             </Form.Field>
           </div>
 
