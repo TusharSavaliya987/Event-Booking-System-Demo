@@ -1,3 +1,40 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Dark mode editor styles */
+.dark .quill-editor-wrapper .ql-editor {
+  color: #fff;
+}
+
+.dark .quill-editor-wrapper .ql-snow .ql-stroke {
+  stroke: #fff;
+}
+
+.dark .quill-editor-wrapper .ql-snow .ql-fill {
+  fill: #fff;
+}
+
+.dark .quill-editor-wrapper .ql-snow .ql-picker-label {
+  color: #fff;
+}
+
+.quill-editor-wrapper .ql-toolbar {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  border-bottom: none !important;
+}
+
+.quill-editor-wrapper .ql-container {
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+/* Dark mode border adjustments */
+.dark .quill-editor-wrapper .ql-toolbar {
+  border-color: #4b5563 !important;
+}
+
+.dark .quill-editor-wrapper .ql-container {
+  border-color: #4b5563 !important;
+}

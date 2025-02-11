@@ -3,11 +3,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { addEvent, updateEvent } from '../store/slices/eventsSlice';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import * as Form from '@radix-ui/react-form';
 import * as Select from '@radix-ui/react-select';
-import { Bold, Italic, List, ListOrdered } from 'lucide-react';
 
 const EventForm = () => {
   const { id } = useParams();
@@ -23,16 +22,25 @@ const EventForm = () => {
   const [location, setLocation] = useState(existingEvent?.location || '');
   const [category, setCategory] = useState(existingEvent?.category || 'conference');
   const [imageUrl, setImageUrl] = useState(existingEvent?.imageUrl || '');
+  const [description, setDescription] = useState(existingEvent?.description || '');
 
-  const editor = useEditor({
-    extensions: [StarterKit],
-    content: existingEvent?.description || '',
-    editorProps: {
-      attributes: {
-        class: 'prose dark:prose-invert max-w-none focus:outline-none min-h-[200px]',
-      },
-    },
-  });        
+  // Quill editor modules configuration
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['link'],
+      ['clean']
+    ],
+  };
+
+  const formats = [
+    'header',
+    'bold', 'italic', 'underline',
+    'list', 'bullet',
+    'link'
+  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +49,7 @@ const EventForm = () => {
       const eventData = {
         id: existingEvent?.id || crypto.randomUUID(),
         title,
-        description: editor?.getHTML() || '',
+        description,
         date: `${date}T${time}:00.000Z`,
         location,
         category,
@@ -208,52 +216,25 @@ const EventForm = () => {
             </Select.Root>
           </div>
 
-          <div>
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
-            <div className="mt-1 border dark:border-gray-600 rounded-md">
-              <div className="border-b dark:border-gray-600 px-3 py-2 flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => editor?.chain().focus().toggleBold().run()}
-                  className={`p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 ${
-                    editor?.isActive('bold') ? 'bg-gray-100 dark:bg-gray-700' : ''
-                  }`}
-                >
-                  <Bold className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => editor?.chain().focus().toggleItalic().run()}
-                  className={`p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 ${
-                    editor?.isActive('italic') ? 'bg-gray-100 dark:bg-gray-700' : ''
-                  }`}
-                >
-                  <Italic className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => editor?.chain().focus().toggleBulletList().run()}
-                  className={`p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 ${
-                    editor?.isActive('bulletList') ? 'bg-gray-100 dark:bg-gray-700' : ''
-                  }`}
-                >
-                  <List className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => editor?.chain().focus().toggleOrderedList().run()}
-                  className={`p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 ${
-                    editor?.isActive('orderedList') ? 'bg-gray-100 dark:bg-gray-700' : ''
-                  }`}
-                >
-                  <ListOrdered className="w-4 h-4" />
-                </button>
-              </div>
-              <div className="p-4 bg-white dark:bg-gray-700">
-                <EditorContent editor={editor} />
-              </div>
+          <Form.Field name="description">
+            <div className="flex items-baseline justify-between">
+              <Form.Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Description
+              </Form.Label>
             </div>
-          </div>
+            <Form.Control asChild>
+            <div className="mt-1 border dark:border-gray-600 rounded-lg h-[300px] quill-editor-wrapper">
+                <ReactQuill
+                  theme="snow"
+                  value={description}
+                  onChange={setDescription}
+                  modules={modules}
+                  formats={formats}
+                  className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white h-[calc(100%-45px)]"
+                />
+              </div>
+            </Form.Control>
+          </Form.Field>
 
           <div className="flex justify-end gap-4">
             <button
