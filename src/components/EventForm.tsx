@@ -89,7 +89,7 @@ const EventForm = () => {
             <Form.Control asChild>
               <input
                 type="text"
-                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
@@ -109,7 +109,7 @@ const EventForm = () => {
             <Form.Control asChild>
               <input
                 type="url"
-                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
                 placeholder="https://example.com/image.jpg"
@@ -143,7 +143,7 @@ const EventForm = () => {
               <Form.Control asChild>
                 <input
                   type="date"
-                  className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   required
@@ -163,7 +163,7 @@ const EventForm = () => {
               <Form.Control asChild>
                 <input
                   type="time"
-                  className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
                   required
@@ -184,7 +184,7 @@ const EventForm = () => {
             <Form.Control asChild>
               <input
                 type="text"
-                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 required
@@ -195,7 +195,7 @@ const EventForm = () => {
           <div>
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
             <Select.Root value={category} onValueChange={setCategory}>
-              <Select.Trigger className="mt-1 inline-flex items-center justify-between px-3 py-2 w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+              <Select.Trigger className="mt-1 inline-flex items-center justify-between px-3 py-2 w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-3 py-2">
                 <Select.Value placeholder="Select category" />
               </Select.Trigger>
               <Select.Portal>
@@ -230,7 +230,7 @@ const EventForm = () => {
                   onChange={setDescription}
                   modules={modules}
                   formats={formats}
-                  className="[&_.ql-toolbar]:border-none [&_.ql-container]:border-none [&_.ql-editor]:dark:text-white [&_.ql-snow_.ql-stroke]:dark:stroke-white [&_.ql-snow_.ql-fill]:dark:fill-white [&_.ql-snow.ql-toolbar]:dark:bg-gray-700 [&_.ql-snow.ql-toolbar]:rounded-t-md [&_.ql-container]:rounded-b-md [&_.ql-editor]:min-h-[300px]"
+                  className="[&_.ql-toolbar]:border-none [&_.ql-container]:border-none [&_.ql-editor]:dark:text-white [&_.ql-snow_.ql-stroke]:dark:stroke-white [&_.ql-snow_.ql-fill]:dark:fill-white [&_.ql-snow.ql-toolbar]:dark:bg-gray-700 [&_.ql-snow.ql-toolbar]:rounded-t-md [&_.ql-container]:rounded-b-md [&_.ql-editor]:min-h-[300px] [&_.ql-editor]:px-3 [&_.ql-editor]:py-2"
                 />
               </div>
             </Form.Control>
