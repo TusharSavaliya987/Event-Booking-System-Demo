@@ -8,7 +8,7 @@ A modern event management web application built with **React, TypeScript, and Ra
 
 ### 🎯 Core Functionality
 - 🗓️ **Full CRUD Operations** – Create, Read, Update, Delete events.
-- 📝 **Rich text editor** (TipTap) for event descriptions.
+- 📝 **Rich text editor** (Quill Editor) for event descriptions.
 - 🔍 **Filter events** by category (Conference/Workshop/Meetup).
 - ⏳ **Toggle between upcoming/past events**.
 - 💾 **Persistent local storage** for event data.
@@ -29,7 +29,7 @@ A modern event management web application built with **React, TypeScript, and Ra
 - Redux Toolkit + React-Redux
 - React Router 
 - date-fns (for date formatting)
-- TipTap (rich text editor)
+- Quill (rich text editor)
 
 ### **UI Components:**
 - Radix UI Primitives
