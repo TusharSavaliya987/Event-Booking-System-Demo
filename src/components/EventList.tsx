@@ -7,6 +7,25 @@ import * as Select from '@radix-ui/react-select';
 import * as Switch from '@radix-ui/react-switch';
 import { format } from 'date-fns';
 
+// Category options for the select component
+const CATEGORY_OPTIONS = [
+  { value: 'all', label: 'All Categories' },
+  { value: 'conference', label: 'Conference' },
+  { value: 'workshop', label: 'Workshop' },
+  { value: 'meetup', label: 'Meetup' }
+];
+
+// Reusable event info display items
+const EventInfoItem = ({ icon: Icon, value }: { 
+  icon: React.ComponentType<{ className?: string }>,
+  value: React.ReactNode 
+}) => (
+  <div className="flex items-center gap-2">
+    <Icon className="w-4 h-4" />
+    <span>{value}</span>
+  </div>
+);
+
 const EventList = () => {
   const [showPastEvents, setShowPastEvents] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -22,6 +41,15 @@ const EventList = () => {
 
     return true;
   });
+
+  // Date formatting helper
+  const formatEventDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return {
+      formattedDate: format(date, 'PPP'),
+      formattedTime: format(date, 'p')
+    };
+  };
 
   return (
     <div className="space-y-6">
@@ -61,18 +89,15 @@ const EventList = () => {
             <Select.Portal>
               <Select.Content className="bg-white dark:bg-gray-700 rounded-md shadow-lg">
                 <Select.Viewport className="p-1">
-                  <Select.Item value="all" className="px-3 py-2 outline-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md text-gray-900 dark:text-white">
-                    <Select.ItemText>All Categories</Select.ItemText>
-                  </Select.Item>
-                  <Select.Item value="conference" className="px-3 py-2 outline-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md text-gray-900 dark:text-white">
-                    <Select.ItemText>Conference</Select.ItemText>
-                  </Select.Item>
-                  <Select.Item value="workshop" className="px-3 py-2 outline-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md text-gray-900 dark:text-white">
-                    <Select.ItemText>Workshop</Select.ItemText>
-                  </Select.Item>
-                  <Select.Item value="meetup" className="px-3 py-2 outline-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md text-gray-900 dark:text-white">
-                    <Select.ItemText>Meetup</Select.ItemText>
-                  </Select.Item>
+                  {CATEGORY_OPTIONS.map(({ value, label }) => (
+                    <Select.Item 
+                      key={value}
+                      value={value}
+                      className="px-3 py-2 outline-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md text-gray-900 dark:text-white"
+                    >
+                      <Select.ItemText>{label}</Select.ItemText>
+                    </Select.Item>
+                  ))}
                 </Select.Viewport>
               </Select.Content>
             </Select.Portal>
@@ -81,46 +106,41 @@ const EventList = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredEvents.map(event => (
-          <Link
-            key={event.id}
-            to={`/event/${event.id}`}
-            className="block bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden"
-          >
-            <div className="aspect-video w-full">
-              <img
-                src={event.imageUrl || 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&auto=format&fit=crop'}
-                alt={event.title}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&auto=format&fit=crop';
-                }}
-              />
-            </div>
-            <div className="p-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{event.title}</h2>
-              <div className="space-y-2 text-gray-600 dark:text-gray-400">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  <span>{format(new Date(event.date), 'PPP')}</span>
+        {filteredEvents.map(event => {
+          const { formattedDate, formattedTime } = formatEventDate(event.date);
+          
+          return (
+            <Link
+              key={event.id}
+              to={`/event/${event.id}`}
+              className="block bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+            >
+              <div className="aspect-video w-full">
+                <img
+                  src={event.imageUrl || 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&auto=format&fit=crop'}
+                  alt={event.title}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&auto=format&fit=crop';
+                  }}
+                />
+              </div>
+              <div className="p-6">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{event.title}</h2>
+                <div className="space-y-2">
+                  <EventInfoItem icon={Calendar} value={formattedDate} />
+                  <EventInfoItem icon={Clock} value={formattedTime} />
+                  <EventInfoItem icon={MapPin} value={event.location} />
                 </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4" />
-                  <span>{format(new Date(event.date), 'p')}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  <span>{event.location}</span>
+                <div className="mt-4">
+                  <span className="inline-block px-3 py-1 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 rounded-full">
+                    {event.category}
+                  </span>
                 </div>
               </div>
-              <div className="mt-4">
-                <span className="inline-block px-3 py-1 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 rounded-full">
-                  {event.category}
-                </span>
-              </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
 
       {filteredEvents.length === 0 && (
