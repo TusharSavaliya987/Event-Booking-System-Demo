@@ -1,4 +1,3 @@
-
 import { NavigationMenu, NavigationMenuList, NavigationMenuItem } from '@radix-ui/react-navigation-menu';
 
 import { Link } from 'react-router-dom';
@@ -21,12 +20,18 @@ const Navigation = () => {
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link to="/" className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
-                Events
+              <Link 
+                to="/" 
+                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+              >
+                All Events
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link to="/create" className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+              <Link 
+                to="/create" 
+                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+              >
                 Create Event
               </Link>
             </NavigationMenuItem>
@@ -41,7 +46,7 @@ const Navigation = () => {
               </Switch.Root>
               <Moon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
             </NavigationMenuItem>
-          </NavigationMenuList>
+          </NavigationMenuList> 
         </NavigationMenu>
       </div>
     </header>
