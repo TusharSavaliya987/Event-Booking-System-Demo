@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { RootState } from '../store/store';
-import { Calendar, MapPin, Clock } from 'lucide-react';
+import { Calendar, MapPin, Clock, ChevronDown } from 'lucide-react';
 import * as Select from '@radix-ui/react-select';
 import * as Switch from '@radix-ui/react-switch';
 import { format } from 'date-fns';
@@ -29,6 +29,11 @@ const EventInfoItem = ({ icon: Icon, value }: {
 const EventList = () => {
   const [showPastEvents, setShowPastEvents] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(3);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortConfig, setSortConfig] = useState<{ key: 'title' | 'date'; direction: 'asc' | 'desc' } | null>(null);
+  const [locationFilter, setLocationFilter] = useState('all');
   const events = useSelector((state: RootState) => state.events.events);
 
   const filteredEvents = events.filter(event => {
@@ -38,9 +43,29 @@ const EventList = () => {
 
     if (showPastEvents !== isPastEvent) return false;
     if (selectedCategory !== 'all' && event.category !== selectedCategory) return false;
-
-    return true;
+    const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesLocation = locationFilter === 'all' || event.location === locationFilter;
+    
+    return matchesSearch && matchesLocation;
   });
+
+  const sortedEvents = [...filteredEvents].sort((a, b) => {
+    if (!sortConfig) return 0;
+    if (sortConfig.key === 'title') {
+      return sortConfig.direction === 'asc' 
+        ? a.title.localeCompare(b.title)
+        : b.title.localeCompare(a.title);
+    }
+    return sortConfig.direction === 'asc'
+      ? new Date(a.date).getTime() - new Date(b.date).getTime()
+      : new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentEvents = sortedEvents.slice(indexOfFirstItem, indexOfLastItem);
+
+  const locations = Array.from(new Set(events.map(event => event.location)));
 
   // Date formatting helper
   const formatEventDate = (dateString: string) => {
@@ -103,10 +128,96 @@ const EventList = () => {
             </Select.Portal>
           </Select.Root>
         </div>
+
+        <div className="flex-1">
+          <input
+            type="text"
+            placeholder="Search events..."
+            className="px-3 py-2 border border-gray-200 rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-200"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Select.Root value={locationFilter} onValueChange={setLocationFilter}>
+            <Select.Trigger className="flex items-center gap-2 px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 rounded-md">
+              <span className="text-gray-700 dark:text-gray-300">Location :-</span>
+              <Select.Value />
+              <ChevronDown className="w-4 h-4" />
+            </Select.Trigger>
+            <Select.Portal>
+              <Select.Content className="bg-white dark:bg-gray-700 rounded-md shadow-lg">
+                <Select.Viewport className="p-1">
+                  <Select.Item 
+                    value="all"
+                    className="px-3 py-2 outline-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md text-gray-900 dark:text-white"
+                  >
+                    <Select.ItemText>All Locations</Select.ItemText>
+                  </Select.Item>
+                  {locations.map((location) => (
+                    <Select.Item 
+                      key={location}
+                      value={location}
+                      className="px-3 py-2 outline-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md text-gray-900 dark:text-white"
+                    >
+                      <Select.ItemText>{location}</Select.ItemText>
+                    </Select.Item>
+                  ))}
+                </Select.Viewport>
+              </Select.Content>
+            </Select.Portal>
+          </Select.Root>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Select.Root
+            value={sortConfig ? `${sortConfig.key}-${sortConfig.direction}` : ''}
+            onValueChange={(value) => {
+              const [key, direction] = value.split('-') as ['title' | 'date', 'asc' | 'desc'];
+              setSortConfig({ key, direction });
+            }}
+          >
+            <Select.Trigger className="flex items-center gap-2 px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 rounded-md">
+              <Select.Value placeholder="Sort by" />
+              <ChevronDown className="w-4 h-4" />
+            </Select.Trigger>
+            <Select.Portal>
+              <Select.Content className="bg-white dark:bg-gray-700 rounded-md shadow-lg">
+                <Select.Viewport className="p-1">
+                  <Select.Item 
+                    value="title-asc"
+                    className="px-3 py-2 outline-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md text-gray-900 dark:text-white"
+                  >
+                    <Select.ItemText>Name (A-Z)</Select.ItemText>
+                  </Select.Item>
+                  <Select.Item 
+                    value="title-desc"
+                    className="px-3 py-2 outline-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md text-gray-900 dark:text-white"
+                  >
+                    <Select.ItemText>Name (Z-A)</Select.ItemText>
+                  </Select.Item>
+                  <Select.Item 
+                    value="date-asc"
+                    className="px-3 py-2 outline-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md text-gray-900 dark:text-white"
+                  >
+                    <Select.ItemText>Date (Oldest First)</Select.ItemText>
+                  </Select.Item>
+                  <Select.Item 
+                    value="date-desc"
+                    className="px-3 py-2 outline-none cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md text-gray-900 dark:text-white"
+                  >
+                    <Select.ItemText>Date (Newest First)</Select.ItemText>
+                  </Select.Item>
+                </Select.Viewport>
+              </Select.Content>
+            </Select.Portal>
+          </Select.Root>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredEvents.map(event => {
+        {currentEvents.map(event => {
           const { formattedDate, formattedTime } = formatEventDate(event.date);
           
           return (
@@ -148,6 +259,24 @@ const EventList = () => {
           <p className="text-gray-500 dark:text-gray-400 text-lg">
             {showPastEvents ? 'No past events found.' : 'No upcoming events found.'}
           </p>
+        </div>
+      )}
+
+      {filteredEvents.length > itemsPerPage && (
+        <div className="flex justify-center gap-2 mt-8">
+          {Array.from({ length: Math.ceil(filteredEvents.length / itemsPerPage) }).map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentPage(index + 1)}
+              className={`px-3 py-1 rounded-md ${
+                currentPage === index + 1 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
         </div>
       )}
     </div>

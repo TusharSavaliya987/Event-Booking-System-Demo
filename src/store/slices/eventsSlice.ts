@@ -5,6 +5,7 @@ interface EventsState {
   events: Event[];
   loading: boolean;
   error: string | null;
+  // Add pagination metadata if needed
 }
 
 const initialState: EventsState = {
