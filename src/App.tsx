@@ -10,6 +10,10 @@ import LoadingSkeleton from './components/LoadingSkeleton';
 import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
 
+import ProtectedRoute from './components/ProtectedRoute';
+import AuthForm from './components/AuthForm';
+import 'react-toastify/dist/ReactToastify.css';
+
 function App() {
   const isLoading = useSelector((state: RootState) => state.events.loading);
 
@@ -24,10 +28,14 @@ function App() {
                 <LoadingSkeleton />
               ) : (
                 <Routes>
-                  <Route path="/" element={<EventList />} />
-                  <Route path="/event/:id" element={<EventDetails />} />
-                  <Route path="/create" element={<EventForm />} />
-                  <Route path="/edit/:id" element={<EventForm />} />
+                  <Route path="/login" element={<AuthForm type="login" />} />
+                  <Route path="/register" element={<AuthForm type="register" />} />
+                  <Route element={<ProtectedRoute />}>
+                    <Route path="/" element={<EventList />} />
+                    <Route path="/event/:id" element={<EventDetails />} />
+                    <Route path="/create" element={<EventForm />} />
+                    <Route path="/edit/:id" element={<EventForm />} />
+                  </Route>
                 </Routes>
               )}
             </main>

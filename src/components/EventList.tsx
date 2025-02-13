@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { RootState } from '../store/store';
 import { Calendar, MapPin, Clock, ChevronDown } from 'lucide-react';
 import * as Select from '@radix-ui/react-select';
 import * as Switch from '@radix-ui/react-switch';
 import { format } from 'date-fns';
+import { getUserSession } from '../utils/auth';
 
 // Category options for the select component
 const CATEGORY_OPTIONS = [
@@ -35,6 +36,14 @@ const EventList = () => {
   const [sortConfig, setSortConfig] = useState<{ key: 'title' | 'date'; direction: 'asc' | 'desc' } | null>(null);
   const [locationFilter, setLocationFilter] = useState('all');
   const events = useSelector((state: RootState) => state.events.events);
+  const navigate = useNavigate();
+  const user = getUserSession();
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
 
   const filteredEvents = events.filter(event => {
     const eventDate = new Date(event.date);
