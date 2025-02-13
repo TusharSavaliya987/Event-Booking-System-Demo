@@ -13,36 +13,45 @@ import { RootState } from './store/store';
 import ProtectedRoute from './components/ProtectedRoute';
 import AuthForm from './components/AuthForm';
 import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   const isLoading = useSelector((state: RootState) => state.events.loading);
 
   return (
-    <ThemeProvider>
-      <Theme accentColor="blue" radius="medium">
-        <Router>
-          <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-            <Navigation />
-            <main className="container mx-auto px-4 py-8">
-              {isLoading ? (
-                <LoadingSkeleton />
-              ) : (
-                <Routes>
-                  <Route path="/login" element={<AuthForm type="login" />} />
-                  <Route path="/register" element={<AuthForm type="register" />} />
-                  <Route element={<ProtectedRoute />}>
-                    <Route path="/" element={<EventList />} />
-                    <Route path="/event/:id" element={<EventDetails />} />
-                    <Route path="/create" element={<EventForm />} />
-                    <Route path="/edit/:id" element={<EventForm />} />
-                  </Route>
-                </Routes>
-              )}
-            </main>
-          </div>
-        </Router>
-      </Theme>
-    </ThemeProvider>
+    <>
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar
+        theme="dark"
+      />
+      <ThemeProvider>
+        <Theme accentColor="blue" radius="medium">
+          <Router>
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+              <Navigation />
+              <main className="container mx-auto px-4 py-8">
+                {isLoading ? (
+                  <LoadingSkeleton />
+                ) : (
+                  <Routes>
+                    <Route path="/login" element={<AuthForm type="login" />} />
+                    <Route path="/register" element={<AuthForm type="register" />} />
+                    <Route element={<ProtectedRoute />}>
+                      <Route path="/" element={<EventList />} />
+                      <Route path="/event/:id" element={<EventDetails />} />
+                      <Route path="/create" element={<EventForm />} />
+                      <Route path="/edit/:id" element={<EventForm />} />
+                    </Route>
+                  </Routes>
+                )}
+              </main>
+            </div>
+          </Router>
+        </Theme>
+      </ThemeProvider>
+    </>
   );
 }
 

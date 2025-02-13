@@ -38,3 +38,116 @@
 .dark .quill-editor-wrapper .ql-container {
   border-color: #4b5563 !important;
 }
+
+/* Add these styles */
+.prose ul {
+  @apply list-disc pl-8 mb-4;
+}
+
+.prose ol {
+  @apply list-decimal pl-8 mb-4;
+}
+
+.prose h1 {
+  @apply text-3xl font-bold mb-4 mt-6;
+}
+
+.prose h2 {
+  @apply text-2xl font-bold mb-3 mt-5;
+}
+
+.prose h3 {
+  @apply text-xl font-semibold mb-2 mt-4;
+}
+
+.dark .prose {
+  @apply text-gray-300;
+}
+
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3 {
+  @apply text-white;
+}
+
+/* Remove all Quill borders and fix dark mode */
+.ql-toolbar.ql-snow {
+  border: none !important;
+  background: #f8fafc !important; /* slate-50 */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.ql-container.ql-snow {
+  border: none !important;
+  height: calc(350px - 42px) !important; /* Total height - toolbar height */
+  overflow-y: auto !important;
+}
+
+.ql-editor {
+  min-height: 300px !important;
+  padding-bottom: 2rem !important;
+}
+
+/* Dark mode overrides */
+.dark .ql-toolbar.ql-snow {
+  background: #1e293b !important; /* slate-800 */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.dark .ql-snow .ql-stroke {
+  stroke: #f8fafc !important; /* slate-50 */
+}
+
+.dark .ql-snow .ql-fill {
+  fill: #f8fafc !important; /* slate-50 */
+}
+
+.dark .ql-snow .ql-picker-label {
+  color: #f8fafc !important; /* slate-50 */
+}
+
+/* Custom Scrollbar Styling */
+.ql-container::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.ql-container::-webkit-scrollbar-track {
+  background: #f1f5f9; /* slate-100 */
+  border-radius: 6px;
+}
+
+.ql-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* slate-300 */
+  border-radius: 6px;
+  border: 2px solid #f1f5f9; /* match track color */
+  transition: background 0.2s;
+}
+
+.ql-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* slate-400 */
+}
+
+/* Dark Mode Scrollbar */
+.dark .ql-container::-webkit-scrollbar-track {
+  background: #1e293b; /* slate-800 */
+}
+
+.dark .ql-container::-webkit-scrollbar-thumb {
+  background: #475569; /* slate-600 */
+  border-color: #1e293b; /* dark track color */
+}
+
+.dark .ql-container::-webkit-scrollbar-thumb:hover {
+  background: #64748b; /* slate-500 */
+}
+
+/* Firefox Support */
+.ql-container {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.dark .ql-container {
+  scrollbar-color: #475569 #1e293b;
+}

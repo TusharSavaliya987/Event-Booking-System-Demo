@@ -1,11 +1,14 @@
 import { useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { RootState } from '../store/store';
-import { Calendar, MapPin, Clock, Edit, Trash } from 'lucide-react';
+import { Calendar, MapPin, Clock, Edit, Trash, ChevronLeft } from 'lucide-react';
 import { format } from 'date-fns';
 import { useDispatch } from 'react-redux';
 import { deleteEvent } from '../store/slices/eventsSlice';
 import * as AlertDialog from '@radix-ui/react-alert-dialog';
+import { toast } from 'react-toastify';
+import { useState } from 'react';
+import LoadingSkeleton from './LoadingSkeleton';
 
 const EventDetails = () => {
   const { id } = useParams();
@@ -14,6 +17,7 @@ const EventDetails = () => {
   const event = useSelector((state: RootState) =>
     state.events.events.find(e => e.id === id)
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   if (!event) {
     return (
@@ -24,16 +28,27 @@ const EventDetails = () => {
   }
 
   const handleDelete = () => {
+    setIsLoading(true);
     new Promise((resolve) => {
       dispatch(deleteEvent(event.id));
-      resolve(null);
+      toast.success('Event deleted successfully!', {
+        position: "top-center",
+        autoClose: 3000,
+        theme: 'dark', 
+      });
+      setTimeout(() => {
+        resolve(null);
+      }, 1000);
     }).then(() => {
       navigate('/');
+      setIsLoading(false);
     });
   };
 
-  return (
-    <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+  return isLoading ? (
+    <LoadingSkeleton />
+  ) : (
+    <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden relative pb-20">
       <div className="aspect-video w-full">
         <img
           src={event.imageUrl || 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&auto=format&fit=crop'}
@@ -113,6 +128,19 @@ const EventDetails = () => {
         </div>
 
         <div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: event.description }} />
+      </div>
+
+      {/* Floating back button */}
+      <div className="absolute bottom-4 right-4">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-500 text-white rounded-lg 
+                   hover:from-blue-700 hover:to-indigo-600 transition-all duration-300 shadow-lg
+                   transform hover:scale-105 text-sm"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          Go Back
+        </button>
       </div>
     </div>
   );

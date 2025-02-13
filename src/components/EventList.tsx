@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { RootState } from '../store/store';
-import { Calendar, MapPin, Clock, ChevronDown } from 'lucide-react';
+import { Calendar, MapPin, Clock, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import * as Select from '@radix-ui/react-select';
 import * as Switch from '@radix-ui/react-switch';
 import { format } from 'date-fns';
@@ -45,17 +45,21 @@ const EventList = () => {
     }
   }, [user, navigate]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, locationFilter, searchTerm, showPastEvents]);
+
   const filteredEvents = events.filter(event => {
     const eventDate = new Date(event.date);
     const now = new Date();
     const isPastEvent = eventDate < now;
 
-    if (showPastEvents !== isPastEvent) return false;
-    if (selectedCategory !== 'all' && event.category !== selectedCategory) return false;
-    const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesLocation = locationFilter === 'all' || event.location === locationFilter;
-    
-    return matchesSearch && matchesLocation;
+    return (
+      showPastEvents === isPastEvent &&
+      (selectedCategory === 'all' || event.category === selectedCategory) &&
+      event.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (locationFilter === 'all' || event.location === locationFilter)
+    );
   });
 
   const sortedEvents = [...filteredEvents].sort((a, b) => {
@@ -272,20 +276,44 @@ const EventList = () => {
       )}
 
       {filteredEvents.length > itemsPerPage && (
-        <div className="flex justify-center gap-2 mt-8">
-          {Array.from({ length: Math.ceil(filteredEvents.length / itemsPerPage) }).map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentPage(index + 1)}
-              className={`px-3 py-1 rounded-md ${
-                currentPage === index + 1 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
-              }`}
-            >
-              {index + 1}
-            </button>
-          ))}
+        <div className="flex justify-center items-center gap-4 mt-8">
+          <button
+            onClick={() => {
+              if (currentPage > 1) {
+                setCurrentPage(prev => prev - 1);
+              }
+            }}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 border dark:border-gray-600 rounded-lg flex items-center gap-2 transition-colors duration-200 ${
+              currentPage === 1 
+                ? 'opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-800' 
+                : 'bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 hover:text-blue-700'
+            }`}
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Previous
+          </button>
+          
+          <span className="text-sm text-gray-600 dark:text-gray-300 mx-4">
+            Page {currentPage} of {Math.ceil(filteredEvents.length / itemsPerPage)}
+          </span>
+          
+          <button
+            onClick={() => {
+              if (currentPage < Math.ceil(filteredEvents.length / itemsPerPage)) {
+                setCurrentPage(prev => prev + 1);
+              }
+            }}
+            disabled={currentPage === Math.ceil(filteredEvents.length / itemsPerPage)}
+            className={`px-4 py-2 border dark:border-gray-600 rounded-lg flex items-center gap-2 transition-colors duration-200 ${
+              currentPage === Math.ceil(filteredEvents.length / itemsPerPage)
+                ? 'opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-800'
+                : 'bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 hover:text-blue-700'
+            }`}
+          >
+            Next
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       )}
     </div>

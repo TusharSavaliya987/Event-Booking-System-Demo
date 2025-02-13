@@ -7,6 +7,8 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import * as Form from '@radix-ui/react-form';
 import * as Select from '@radix-ui/react-select';
+import { toast } from 'react-toastify';
+import LoadingSkeleton from './LoadingSkeleton';
 
 const EventForm = () => {
   const { id } = useParams();
@@ -35,6 +37,7 @@ const EventForm = () => {
   const [category, setCategory] = useState(existingEvent?.category || 'conference');
   const [imageUrl, setImageUrl] = useState(existingEvent?.imageUrl || '');
   const [description, setDescription] = useState(existingEvent?.description || '');
+  const [isLoading, setIsLoading] = useState(false);
 
   // Quill editor modules configuration
   const modules = {
@@ -56,6 +59,7 @@ const EventForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     
     new Promise((resolve) => {
       const localDateTime = new Date(`${date}T${time}`);
@@ -75,16 +79,31 @@ const EventForm = () => {
       
       if (existingEvent) {
         dispatch(updateEvent(eventData));
+        toast.success('Event updated successfully!', {
+          position: "top-center",
+          autoClose: 3000,
+          theme: 'dark',
+        });
       } else {
         dispatch(addEvent(eventData));
+        toast.success('Event created successfully!', {
+          position: "top-center", 
+          autoClose: 3000,
+          theme: 'dark',
+        });
       }
-      resolve(null);
+      setTimeout(() => {
+        resolve(null);
+      }, 1000);
     }).then(() => {
       navigate('/');
+      setIsLoading(false);
     });
   };
 
-  return (
+  return isLoading ? (
+    <LoadingSkeleton />
+  ) : (
     <div className="max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
         {existingEvent ? 'Edit Event' : 'Create New Event'}
@@ -243,14 +262,14 @@ const EventForm = () => {
               </Form.Label>
             </div>
             <Form.Control asChild>
-            <div className="mt-1 border border-gray-300 dark:border-gray-600 rounded-md h-[400px] overflow-hidden focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500">
+              <div className="mt-1 rounded-md border border-gray-300 dark:border-gray-600 h-[350px] flex flex-col overflow-hidden focus-within:ring-1 focus-within:ring-blue-500">
                 <ReactQuill
                   theme="snow"
                   value={description}
                   onChange={setDescription}
                   modules={modules}
                   formats={formats}
-                  className="[&_.ql-toolbar]:border-none [&_.ql-container]:border-none [&_.ql-editor]:dark:text-white [&_.ql-snow_.ql-stroke]:dark:stroke-white [&_.ql-snow_.ql-fill]:dark:fill-white [&_.ql-snow.ql-toolbar]:dark:bg-gray-700 [&_.ql-snow.ql-toolbar]:rounded-t-md [&_.ql-container]:rounded-b-md [&_.ql-editor]:min-h-[300px] [&_.ql-editor]:px-3 [&_.ql-editor]:py-2"
+                  className="[&_.ql-toolbar]:sticky [&_.ql-toolbar]:top-0 [&_.ql-toolbar]:z-10 [&_.ql-toolbar]:bg-white [&_.ql-toolbar]:dark:bg-gray-800 [&_.ql-container]:bg-white [&_.ql-container]:dark:bg-gray-800 [&_.ql-container]:overflow-y-auto [&_.ql-editor]:min-h-[300px] [&_.ql-editor]:px-3 [&_.ql-editor]:py-2 [&_.ql-editor]:list-disc [&_.ql-editor]:pl-10"
                 />
               </div>
             </Form.Control>
