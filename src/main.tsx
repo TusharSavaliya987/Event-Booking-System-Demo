@@ -10,7 +10,7 @@ import { setLoading } from './store/slices/eventsSlice';
 store.dispatch(setLoading(true));
 setTimeout(() => {
   store.dispatch(setLoading(false));
-}, 2000); // 2 seconds delay
+}, 1000); // 2 seconds delay
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

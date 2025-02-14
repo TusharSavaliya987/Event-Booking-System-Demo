@@ -1,11 +1,16 @@
-export interface Event {
+export interface AppEvent {
   id: string;
   title: string;
-  description: string;
   date: string;
   location: string;
+  imageUrl: string;
   category: string;
-  imageUrl: string; 
+  description: string;
+  slots: number;
+  price: number;
+  totalSlots: number;
   createdAt: string;
   updatedAt: string;
+  checkoutCount?: number;
+  // Add any other properties used in your components
 }

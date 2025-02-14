@@ -14,6 +14,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AuthForm from './components/AuthForm';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
+import CartPage from './components/CartPage';
+import CheckoutPage from './components/CheckoutPage';
 
 function App() {
   const isLoading = useSelector((state: RootState) => state.events.loading);
@@ -43,6 +45,8 @@ function App() {
                       <Route path="/event/:id" element={<EventDetails />} />
                       <Route path="/create" element={<EventForm />} />
                       <Route path="/edit/:id" element={<EventForm />} />
+                      <Route path="/cart" element={<CartPage />} />
+                      <Route path="/checkout" element={<CheckoutPage />} />
                     </Route>
                   </Routes>
                 )}

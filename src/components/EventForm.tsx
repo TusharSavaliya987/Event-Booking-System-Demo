@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
@@ -75,6 +75,10 @@ const EventForm = () => {
         imageUrl,
         createdAt: existingEvent?.createdAt || new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        checkoutCount: existingEvent?.checkoutCount || 0,
+        slots: existingEvent?.slots || 0,
+        price: existingEvent?.price || 0.00,
+        totalSlots: existingEvent?.totalSlots || 0
       };
       
       if (existingEvent) {
@@ -88,7 +92,7 @@ const EventForm = () => {
         dispatch(addEvent(eventData));
         toast.success('Event created successfully!', {
           position: "top-center", 
-          autoClose: 3000,
+          autoClose: 2000,
           theme: 'dark',
         });
       }
@@ -100,6 +104,10 @@ const EventForm = () => {
       setIsLoading(false);
     });
   };
+
+  useEffect(() => {
+    // Potentially focus on a specific input or handle other DOM-related setups
+  }, []);
 
   return isLoading ? (
     <LoadingSkeleton />
@@ -234,7 +242,7 @@ const EventForm = () => {
           <div>
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
             <Select.Root value={category} onValueChange={setCategory}>
-              <Select.Trigger className="mt-1 inline-flex items-center justify-between px-3 py-2 w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-3 py-2">
+              <Select.Trigger className="mt-1 inline-flex items-center justify-between w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-3 py-2">
                 <Select.Value placeholder="Select category" />
               </Select.Trigger>
               <Select.Portal>

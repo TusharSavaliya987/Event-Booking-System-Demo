@@ -7,10 +7,17 @@ import { useTheme } from '../context/ThemeContext';
 import { clearUserSession, getUserSession } from '../utils/auth';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { CircleUser } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
+import { RootState } from '../store/store';
+import { useSelector } from 'react-redux';
 
 const Navigation = () => {
   const { theme, toggleTheme } = useTheme();
   const user = getUserSession();
+
+  const cartItemsCount = useSelector((state: RootState) => 
+    state.cart.items.reduce((sum, item) => sum + item.quantity, 0)
+  );
 
   const handleLogout = () => {
     clearUserSession();
@@ -45,6 +52,23 @@ const Navigation = () => {
             ) : null}
 
             <NavigationMenuItem className="ml-auto flex items-center gap-4">
+              {user && (
+                <Link 
+                  to="/cart" 
+                  className="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-all relative group"
+                >
+                  <div className="relative">
+                    <ShoppingCart className="w-6 h-6 text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all duration-300 hover:scale-110" />
+                    {cartItemsCount > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-medium shadow-sm animate-[bounce_0.5s_ease-in-out_1]">
+                        {cartItemsCount}
+                      </span>
+                    )}
+                  </div>
+                  <span className="sr-only">Cart</span>
+                </Link>
+              )}
+
               <div className="flex items-center gap-2">
                 <Sun className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 <Switch.Root

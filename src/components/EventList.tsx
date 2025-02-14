@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { RootState } from '../store/store';
 import { Calendar, MapPin, Clock, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -7,6 +7,11 @@ import * as Select from '@radix-ui/react-select';
 import * as Switch from '@radix-ui/react-switch';
 import { format } from 'date-fns';
 import { getUserSession } from '../utils/auth';
+import { Button } from '../components/ui/button';
+import { addToCart } from '../store/slices/cartSlice';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import type { AppEvent } from '../types/event';
 
 // Category options for the select component
 const CATEGORY_OPTIONS = [
@@ -38,6 +43,7 @@ const EventList = () => {
   const events = useSelector((state: RootState) => state.events.events);
   const navigate = useNavigate();
   const user = getUserSession();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!user) {
@@ -89,8 +95,22 @@ const EventList = () => {
     };
   };
 
+  const handleAddToCart = (event: AppEvent) => {
+    dispatch(addToCart(event));
+    toast.success(`${event.title} added to cart!`, {
+      position: "top-center",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  };
+
   return (
     <div className="space-y-6">
+      <ToastContainer />
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Events</h1>
         <Link
@@ -235,32 +255,46 @@ const EventList = () => {
           
           return (
             <Link
-              key={event.id}
+              key={`${event.id}-${event.checkoutCount}`}
               to={`/event/${event.id}`}
-              className="block bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+              className="block bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col"
             >
-              <div className="aspect-video w-full">
-                <img
-                  src={event.imageUrl || 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&auto=format&fit=crop'}
-                  alt={event.title}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&auto=format&fit=crop';
-                  }}
-                />
+              <div className="flex-grow">
+                <div className="aspect-video w-full">
+                  <img
+                    src={event.imageUrl || 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&auto=format&fit=crop'}
+                    alt={event.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&auto=format&fit=crop';
+                    }}
+                  />
+                </div>
+                <div className="p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{event.title}</h2>
+                  <div className="space-y-2">
+                    <EventInfoItem icon={Calendar} value={formattedDate} />
+                    <EventInfoItem icon={Clock} value={formattedTime} />
+                    <EventInfoItem icon={MapPin} value={event.location} />
+                  </div>
+                  <div className="mt-2 flex items-center gap-1 text-sm font-medium">
+                    <span className="text-gray-500 dark:text-gray-400">Total Bookings:</span>
+                    <span className="px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300">
+                      {event.checkoutCount || 0}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="p-6">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{event.title}</h2>
-                <div className="space-y-2">
-                  <EventInfoItem icon={Calendar} value={formattedDate} />
-                  <EventInfoItem icon={Clock} value={formattedTime} />
-                  <EventInfoItem icon={MapPin} value={event.location} />
-                </div>
-                <div className="mt-4">
-                  <span className="inline-block px-3 py-1 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 rounded-full">
-                    {event.category}
-                  </span>
-                </div>
+              <div className="p-6 bg-gray-100 dark:bg-gray-800">
+                <Button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleAddToCart(event);
+                  }}
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-md"
+                >
+                  Add to Cart
+                </Button>
               </div>
             </Link>
           );
